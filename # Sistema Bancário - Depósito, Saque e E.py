@@ -1,62 +1,124 @@
-# Sistema Bancário - Depósito, Saque e Extrato
-extrato = 0
-numero_saques = 0
 LIMITE_SAQUES = 3
 
-while True:
-
-    menu = str(input(''' Selecione uma opção:
-
-    D = Depositar
-    E = Extrato
-    S = Saque
-    O = Sair
-                     Você tem um limite de 3 saques por dia. 
-
-    ''')).upper().strip()
-
-    if menu == 'S':
-      saque = int(input('Qual valor você deseja sacar? '))
-      if saque <= extrato:
-        extrato -= saque
-        numero_saques += 1
-        print(f'Obrigado por usar nossos serviços. Seu extrato atual é de: R${extrato:.2f}')
-      else:
-         print('Você não tem saldo suficiente para ser sacado.')
+class Cliente: # Informações básicas sobre o cliente
+    def __init__(self, nome, cpf, endereco):
+        self.nome = nome
+        self.cpf = cpf
+        self.endereco = endereco
     
-    elif menu == "D":
-        deposito = int(input('Qual o valor que você deseja depositar? ')) 
-        extrato += deposito 
-        print(f'Obrigado por usar nossos serviços. Seu extrato atual é de: R${extrato:.2f}')
-      
-
-    elif menu == 'E':
-        print(f'Esse é o seu extrato atual: R${extrato:.2f}')
-       
-
-    elif menu == 'O':
-       print('Obrigado por usar nossos serviços, volte sempre!')
-       break
-
-    else:
-     print('Essa opção não existe, escolha novamente: ')
-     continue
-
-    if numero_saques == LIMITE_SAQUES:
-       print('Você atingiu o limite de saques dísponivel, volte depois.')
-
-       
-
+    @staticmethod
+    def criar_cliente():
+        nome = input('Digite o seu nome: ')
+        cpf = input('Digite seu CPF: ')
+        endereço = input('Digite o seu endereço: ')
+        return Cliente(nome, cpf, endereço)
     
+    def __str__(self):
+        return f"Cliente: {self.nome}, CPF: {self.cpf}, Endereço: {self.endereco}"
 
 
+class Conta: # Aqui é onde teremos os métodos para sacar e depositar dinheiro
+    def __init__(self, numero_conta, cliente):
+        self.numero_conta = numero_conta
+        self.saldo = 0.0 # Começa com saldo 0
+        self.cliente = cliente
 
-
+    def depositar(self, valor):
+        if valor > 0:
+            self.saldo += valor
+            print(f'Depósito do valor {valor} efetuado com sucesso. Seu saldo agora é de R${self.saldo}')
+        else:
+            print('ERRO! O valor depositado tem que ser maior que 0')
     
+           
+    def sacar(self, valor):
+        if 0 < valor <= self.saldo:
+            self.saldo -= valor
+            print(f'Saque do valor {valor} efetuado com sucesso. O seu saldo agora é de {self.saldo}')
+        else:
+            print('ERRO! Você não tem saldo suficiente')
 
-      
-     
-     
+
+    def consultar_saldo(self):
+        print(f'O seu saldo atual é de {self.saldo}')
+        return self.saldo
+    
+    @staticmethod
+    def criar_conta(cliente):
+        numero = input('Digite o número da conta: ')
+        return Conta(numero, cliente)
+    
+def main(): # Cadastro de inputs do usuário
+    numero_saques = 0
+    print('Bem-vindo ao Banco GVM')
+
+    print('\n--- Cadastro do Cliente ---')
+    cliente = Cliente.criar_cliente()  # Vai puxar o método que está na classe Cliente
+    print(cliente)
+
+    print('\n--- Cadastro de Conta ---')
+    conta = Conta.criar_conta(cliente)
+
+    while True: 
+         print(''' ================ MENU ================
+            D = Depositar
+            S = Sacar
+            C = Consultar Saldo
+            O = Sair 
+         ''')
+
+         opção = input('Digite a operação desejada: ').strip().lower()
+
+         if opção == 'd':
+                try:
+                    valor = float(input('Digite o valor que você deseja depositar: '))
+                    conta.depositar(valor)
+                except ValueError:
+                    print('ERRO! Por favor, insira um valor numérico válido.')
+
+
+         elif opção == 's':
+             if numero_saques < LIMITE_SAQUES:
+                try:
+                    valor = float(input('Digite o valor que você deseja sacar: '))
+                    conta.sacar(valor) # O valor aqui é o que vai cair no método la em cima entre os parenteses
+                    numero_saques += 1 
+                except ValueError:
+                    print('ERRO! Por favor, insira um valor numérico válido.')  
+             else:
+                 print('Você atingiu o limite de saques disponível, volte depois.')
+
+         elif opção == 'c':
+             conta.consultar_saldo()
+
+         elif opção == 'o':
+             print('Obrigado por usar nosso sistema. Volte sempre!')
+             break
+         
+         elif numero_saques == LIMITE_SAQUES:
+            print('Você atingiu o limite de saques dísponivel, volte depois.')
+         
+         else:
+             print('Operação inválida. Tente novamente!')
+        
+if __name__ =='__main__':
+    main()
+         
+             
+
+
+
+        
+         
+
+
+
+
+
+
+
+ 
+ 
 
 
 
